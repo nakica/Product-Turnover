@@ -2,6 +2,6 @@
 {
     public interface ITurnover
     {
-        decimal Calculate();
+        decimal CalculateNetTurnover(decimal grossTurnover, decimal vat);
     }
 }

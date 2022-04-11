@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ProductTurnover.Infra;
 
 namespace ProductTurnover.Business
 {
-    public class Turnover
+    public class Turnover : ITurnover
     {
-        public decimal Calculate()
+        public decimal CalculateNetTurnover(decimal grossTurnover, decimal vat)
         {
-            return 0;
+            var netTurnover = grossTurnover - (grossTurnover * vat);
+            return netTurnover;
         }
     }
 }

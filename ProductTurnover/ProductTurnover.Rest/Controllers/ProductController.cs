@@ -26,7 +26,7 @@ namespace ProductTurnover.Rest.Controllers
             _log.Trace($"{nameof(NetTurnover)} has been invoked.");
             ActionResult result = null;
 
-            if (string.IsNullOrWhiteSpace(prodTurnover.ProductName))
+            if (string.IsNullOrWhiteSpace(prodTurnover?.ProductName))
             {
                 _log.Error("Invalid product name.");
                 result = BadRequest();

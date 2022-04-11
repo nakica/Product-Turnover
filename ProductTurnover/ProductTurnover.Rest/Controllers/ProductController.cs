@@ -17,6 +17,9 @@ namespace ProductTurnover.Rest.Controllers
             _taxation = taxation;
         }
 
+        /// <summary>
+        /// Calculate net turnover for a specified product.
+        /// </summary>
         [HttpPost("/NetTurnover")]
         public IActionResult NetTurnover(ProductTurnover prodTurnover)
         {

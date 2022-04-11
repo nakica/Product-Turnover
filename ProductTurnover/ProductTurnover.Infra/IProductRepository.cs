@@ -4,6 +4,6 @@ namespace ProductTurnover.Infra
 {
     public interface IProductRepository
     {
-        Product Read(int EAN);
+        Product Read(string EAN);
     }
 }

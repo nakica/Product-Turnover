@@ -19,7 +19,7 @@ namespace ProductTurnover.DAL
             _conn.Open();
         }
 
-        public Product Read(int EAN)
+        public Product Read(string EAN)
         {
             var sql = $"SELECT * FROM Product p JOIN Category c ON p.CategoryId = c.Id WHERE p.EAN = {EAN}";
 

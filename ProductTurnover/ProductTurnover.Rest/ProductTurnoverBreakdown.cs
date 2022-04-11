@@ -4,6 +4,6 @@
     {
         public decimal GrossTurnover { get; set; }
         public decimal NetTurnover { get; set; }
-        public string VAT { get; set; }
+        public decimal VAT { get; set; }
     }
 }

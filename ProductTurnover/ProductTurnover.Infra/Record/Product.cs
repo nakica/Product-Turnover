@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProductTurnover.Infra.Record
+﻿namespace ProductTurnover.Infra.Record
 {
     public class Product
     {

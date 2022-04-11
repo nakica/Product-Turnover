@@ -23,7 +23,7 @@ namespace ProductTurnover.Rest
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ProductTurnoverConfig>(Configuration.GetSection("ProductTurnover"));
-            services.AddScoped<ITurnover, Turnover>();
+            services.AddScoped<ITaxation, Taxation>();
             services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddControllers();

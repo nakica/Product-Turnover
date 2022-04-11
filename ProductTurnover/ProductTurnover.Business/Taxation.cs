@@ -2,7 +2,7 @@
 
 namespace ProductTurnover.Business
 {
-    public class Turnover : ITurnover
+    public class Taxation : ITaxation
     {
         public decimal CalculateNetTurnover(decimal grossTurnover, decimal vat)
         {

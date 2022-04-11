@@ -14,6 +14,7 @@ namespace ProductTurnover.Xunit
     {
         private readonly Mock<ILoggingFacility<ProductController>> _logMoq = new Mock<ILoggingFacility<ProductController>>();
         private readonly Mock<IProductRepository> _productRepoMoq = new Mock<IProductRepository>();
+        private readonly Mock<IProductTurnoverCache> _cacheMoq = new Mock<IProductTurnoverCache>();
         private readonly Mock<ITaxation> _taxationMoq = new Mock<ITaxation>();
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace ProductTurnover.Xunit
             _productRepoMoq.Setup(prm => prm.Read(IsAny<string>())).Returns(product).Verifiable();
             _taxationMoq.Setup(tm => tm.CalculateNetTurnover(IsAny<decimal>(), IsAny<decimal>())).Returns(netTurnover).Verifiable();
 
-            var sut = new ProductController(_logMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
+            var sut = new ProductController(_logMoq.Object, _cacheMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
 
             var test = sut.NetTurnover(turnover);
 
@@ -64,7 +65,7 @@ namespace ProductTurnover.Xunit
         [Fact]
         public void NetTurnoverFailsOnInvalidProductTurnover()
         {
-            var sut = new ProductController(_logMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
+            var sut = new ProductController(_logMoq.Object, _cacheMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
 
             var nullProductTurnoverTest = sut.NetTurnover(null);
             var missingProductNameTest = sut.NetTurnover(new Rest.ProductTurnover());
@@ -97,7 +98,7 @@ namespace ProductTurnover.Xunit
 
             _productRepoMoq.Setup(prm => prm.Read(IsAny<string>())).Returns(prod).Verifiable();
 
-            var sut = new ProductController(_logMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
+            var sut = new ProductController(_logMoq.Object, _cacheMoq.Object, _productRepoMoq.Object, _taxationMoq.Object);
 
             var test = sut.NetTurnover(turnover);
 

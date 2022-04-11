@@ -24,9 +24,11 @@ namespace ProductTurnover.Rest
         {
             services.Configure<ProductTurnoverConfig>(Configuration.GetSection("ProductTurnover"));
             services.AddSingleton(typeof(ILoggingFacility<>), typeof(NLogLoggingFacility<>));
+            services.AddSingleton<IProductTurnoverCache, ProductTurnoverCache>();
             services.AddScoped<ITaxation, Taxation>();
             services.AddScoped<IProductRepository, ProductRepository>();
 
+            services.AddMemoryCache();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

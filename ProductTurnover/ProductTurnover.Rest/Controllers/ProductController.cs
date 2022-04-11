@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using ProductTurnover.Infra;
+using System;
 
 namespace ProductTurnover.Rest.Controllers
 {
@@ -7,12 +9,14 @@ namespace ProductTurnover.Rest.Controllers
     public class ProductController : Controller
     {
         private readonly ILoggingFacility<ProductController> _log;
+        private readonly IProductTurnoverCache _cache;
         private readonly IProductRepository _productRepo;
         private readonly ITaxation _taxation;
 
-        public ProductController(ILoggingFacility<ProductController> log, IProductRepository productRepo, ITaxation taxation)
+        public ProductController(ILoggingFacility<ProductController> log, IProductTurnoverCache cache, IProductRepository productRepo, ITaxation taxation)
         {
             _log = log;
+            _cache = cache;
             _productRepo = productRepo;
             _taxation = taxation;
         }
@@ -21,39 +25,48 @@ namespace ProductTurnover.Rest.Controllers
         /// Calculate net turnover for a specified product.
         /// </summary>
         [HttpPost("/NetTurnover")]
-        public IActionResult NetTurnover(ProductTurnover prodTurnover)
+        public IActionResult NetTurnover(ProductTurnover productTurnover)
         {
             _log.Trace($"{nameof(NetTurnover)} has been invoked.");
             ActionResult result = null;
 
-            if (string.IsNullOrWhiteSpace(prodTurnover?.ProductName))
+            if (string.IsNullOrWhiteSpace(productTurnover?.ProductName))
             {
                 _log.Error("Invalid product name.");
                 result = BadRequest();
             }
-            else if (prodTurnover.EAN?.Length < 8 || prodTurnover.EAN?.Length > 13 || !long.TryParse(prodTurnover?.EAN, out var num))
+            else if (productTurnover.EAN?.Length < 8 || productTurnover.EAN?.Length > 13 || !long.TryParse(productTurnover?.EAN, out var num))
             {
                 _log.Error("Invalid EAN.");
                 result = BadRequest();
             }
+            else if (_cache.TryGetValue(productTurnover.EAN, out ProductTurnoverBreakdown turnover))
+            {
+                result = Ok(turnover);
+            }
             else
             {
-                var product = _productRepo.Read(prodTurnover.EAN);
+                var product = _productRepo.Read(productTurnover.EAN);
                 if (product is null)
                 {
-                    _log.Error($"Product with EAN [{prodTurnover.EAN}] was not found.");
+                    _log.Error($"Product with EAN [{productTurnover.EAN}] was not found.");
                     result = NotFound();
                 }
                 else
                 {
-                    var netTurnover = _taxation.CalculateNetTurnover(prodTurnover.GrossTurnover, product.Category.VAT);
+                    var netTurnover = _taxation.CalculateNetTurnover(productTurnover.GrossTurnover, product.Category.VAT);
 
                     var turnoverBreakdown = new ProductTurnoverBreakdown
                     {
-                        GrossTurnover = prodTurnover.GrossTurnover,
+                        GrossTurnover = productTurnover.GrossTurnover,
                         NetTurnover = netTurnover,
                         VAT = product.Category.VAT
                     };
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(1));
+
+                    _cache.Add(turnoverBreakdown, productTurnover.EAN);
 
                     result = Ok(turnoverBreakdown);
                 }

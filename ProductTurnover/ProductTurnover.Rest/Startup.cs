@@ -23,6 +23,7 @@ namespace ProductTurnover.Rest
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ProductTurnoverConfig>(Configuration.GetSection("ProductTurnover"));
+            services.AddSingleton(typeof(ILoggingFacility<>), typeof(NLogLoggingFacility<>));
             services.AddScoped<ITaxation, Taxation>();
             services.AddScoped<IProductRepository, ProductRepository>();
 

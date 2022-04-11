@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProductTurnover.Business\ProductTurnover.Business.csproj" />
+    <ProjectReference Include="..\ProductTurnover.DAL\ProductTurnover.DAL.csproj" />
+    <ProjectReference Include="..\ProductTurnover.Infra\ProductTurnover.Infra.csproj" />
+  </ItemGroup>
+
 </Project>

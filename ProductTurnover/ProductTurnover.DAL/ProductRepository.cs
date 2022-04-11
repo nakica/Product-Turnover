@@ -1,25 +1,40 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using ProductTurnover.Infra;
+using ProductTurnover.Infra.Record;
+using System;
 using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 
 namespace ProductTurnover.DAL
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : IProductRepository, IDisposable
     {
-        private readonly IDbConnection _connection = null;
+        private readonly IDbConnection _conn;
 
-        public ProductRepository(IDbConnection conn)
+        public ProductRepository(IOptions<ProductTurnoverConfig> conf)
         {
-            _connection = conn;
+            _conn = new SqlConnection(conf.Value.ConnectionString);
+            _conn.Open();
         }
 
-        public decimal ReadTaxation(int EAN)
+        public Product Read(int EAN)
         {
-            var sql = $"SELECT c.VAT FROM Product p JOIN Category c ON P.Id = C.Id WHERE p.EAN = {EAN}";
+            var sql = $"SELECT * FROM Product p JOIN Category c ON p.CategoryId = c.Id WHERE p.EAN = {EAN}";
 
-            var vat = _connection.QuerySingleOrDefault<decimal>(sql);
+            var product = _conn.Query<Product, Category, Product>(sql, (product, category) => {
+                product.Category = category;
+                return product;
+            },
+            splitOn: "CategoryId").FirstOrDefault();
 
-            return vat;
+            return product;
+        }
+
+        public void Dispose()
+        {
+            _conn?.Dispose();
         }
     }
 }

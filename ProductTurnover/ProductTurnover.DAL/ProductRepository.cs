@@ -21,7 +21,7 @@ namespace ProductTurnover.DAL
 
         public Product Read(string EAN)
         {
-            var sql = $"SELECT * FROM Product p JOIN Category c ON p.CategoryId = c.Id WHERE p.EAN = {EAN}";
+            var sql = $"SELECT * FROM Product p JOIN Category c ON p.CategoryId = c.Id WHERE p.EAN = '{EAN}'";
 
             var product = _conn.Query<Product, Category, Product>(sql, (product, category) => {
                 product.Category = category;

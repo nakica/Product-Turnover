@@ -65,4 +65,10 @@
     <Build Include="dbo\Tables\Category.sql" />
     <Build Include="dbo\Tables\Product.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\Seed\20220412.SEED.Initial.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\PostDeploy.sql" />
+  </ItemGroup>
 </Project>
